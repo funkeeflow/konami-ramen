@@ -1,0 +1,25 @@
+{
+  "name": "easteregg",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "esm/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "esm/"
+  ],
+  "scripts": {
+    "dev": "tsc -m esNext --outDir esm --watch",
+    "clean": "rimraf dist esm",
+    "prebuild": "npm run clean",
+    "build": "npm run clean && npm run build:cjs && npm run build:es",
+    "build:cjs": "tsc",
+    "build:es": "tsc -m esNext --outDir esm"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.3.4",
+    "rimraf": "^3.0.2"
+  }
+}
