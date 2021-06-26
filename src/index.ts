@@ -1,53 +1,85 @@
-type KeyPattern = Array<String>;
-
-class Easteregg {
-  callback: Function;
-  pattern: KeyPattern = [];
-  validator: Iterator<boolean, boolean, string>
-  timer: number;
+export default class KonamiRamen {
+  pattern: Array<String> = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  validator: Iterator<boolean, any, any>
+  timeout: number = 300;
+  enableSound: boolean = true;
+  listeners: any = {};
   /**
    *
    */
-  constructor(pattern: KeyPattern, hook?: Function) {
-    if (hook) this.callback = hook;
+  constructor(pattern?: Array<String>, timeout?: number) {
     if (pattern) this.pattern = pattern;
+    if (timeout) this.timeout = timeout;
   }
 
-  private *validatePattern(pattern: Array<String>): Iterator<boolean, boolean, string> {
+  /**
+   *
+   * @param pattern
+   * @returns
+   */
+  private *patternValidator(pattern: Array<String>): Generator<any, any, any> {
+    let timer: number;
     let position = 0;
-    let check = false;
-    // console.log("validator started")
-    while (position < pattern.length) {
-      // console.log("position", position, 'keystroke to hit:',  pattern[position])
-      const keyStroke = yield check;
-      // console.log("get keystroke", keyStroke)
-      check = pattern[position] === keyStroke;
-      // console.log("check keystroke", check)
-      if(!check){
-        position = 0
-      } else{
-        position++;
-      }
+    let match = false;
+    while (pattern.length > position) {
+      const { key, callback } = yield { match, position: position - 1 };
+      clearTimeout(timer)
+      timer = setTimeout(() => { position = 0; callback() }, this.timeout);
+      match = pattern[position] === key;
+      if (match) { position++ } else { position = 0 };
     }
-    return check;
+    clearTimeout(timer);
+    return { match, position: position - 1 };
   }
 
+  /**
+   *
+   */
   private startValidator(): void {
-    this.validator = this.validatePattern(this.pattern);
+    this.validator = this.patternValidator(this.pattern);
     this.validator.next();
+    this.emitEvent('start', { position: 0 })
+  }
+
+  /**
+   *
+   */
+  private stopValidator(): void {
+    this.validator.return();
+    this.emitEvent('stop')
+  }
+
+  private emitEvent(type: string, event?: any): void {
+    if (this.listeners[type]) this.listeners[type](event)
   }
 
   /**
    *
    * @param event
    */
-  private handleOnKeyDown(event: KeyboardEvent): void {
-    const { value, done } = this.validator.next(event.key);
-    if (done && value) {
-        console.log("got it 🎉")
-        if(this.callback) this.callback();
-        this.startValidator();
+  private handleOnKeyDown = (event: KeyboardEvent): void => {
+    const { value: { match, position }, done } =
+      this.validator.next({
+        key: event.key,
+        callback: () => {
+          this.emitEvent('timeout', {
+            lastKey: event.key, lastPosition: position, lastMatch: match
+          })
+        }
+      });
+    this.emitEvent("input", {
+      key: event.key, match, position, keyboardEvent: event
+    })
+    if (done && match) {
+      this.emitEvent("success", {
+        lastKey: event.key, lastPosition: position
+      })
+      this.handleOnSuccess()
     }
+  }
+
+  private handleOnSuccess(): void {
+    this.startValidator();
   }
 
   /**
@@ -55,34 +87,56 @@ class Easteregg {
    */
   private addListeners(): void {
     if (typeof window !== 'undefined' && window.document) {
-      document.addEventListener('keyup', this.handleOnKeyDown.bind(this))
-    }
-  }
-
-  private removeListeners(): void {
-    if (typeof window !== 'undefined' && window.document) {
-      document.removeEventListener('keyup', this.handleOnKeyDown)
+      document.addEventListener('keydown', this.handleOnKeyDown)
     }
   }
 
   /**
    *
    */
-  start(): void{
+  private removeListeners(): void {
+    if (typeof window !== 'undefined' && window.document) {
+      document.removeEventListener('keydown', this.handleOnKeyDown)
+    }
+  }
+
+  /**
+   *
+   */
+  start(): void {
     this.addListeners();
     this.startValidator();
   }
 
   /**
-   * @param func: callback function
+   *
    */
-  addHook(func: Function): void {
-    this.callback = func;
-  }
-
-  cleanUp(): void {
+  stop(): void {
+    this.stopValidator()
     this.removeListeners();
   }
-}
 
-export default Easteregg;
+  /**
+   *
+   * @param func
+   */
+  on(type: string, func: Function): void {
+    if (func) this.listeners[type] = func;
+  }
+
+  /**
+   *
+   * @param type
+   */
+  of(type: string) {
+    delete this.listeners[type];
+  }
+
+  /**
+   *
+   * @param time
+   */
+  setTimeout(time: number): void {
+    if (time) this.timeout = time;
+  }
+}
