@@ -1,6 +1,6 @@
 # konami-ramen 🍜
 
-A highly sophisticated **easteregg** library with zero dependancies and lots of customisations, written in Typescript with all ES6+ goodness there is. By default it will listen for the famouse [*Konami Code*](https://en.wikipedia.org/wiki/Konami_Code) (`↑` `↑` `↓` `↓` `←` `→` `←` `→` `a` `b`).
+A highly sophisticated **easter egg** library with zero dependancies and lots of customizations. Its written in Typescript with all ES6+ goodness there is. By default it will listen for the famouse [*Konami Code*](https://en.wikipedia.org/wiki/Konami_Code) (`↑` `↑` `↓` `↓` `←` `→` `←` `→` `a` `b`).
 
 ## Installation
 
@@ -21,7 +21,7 @@ konami.on('success',()=>{
 
 ```
 
- [**Have some ramen and check this demo!** 🍜 ][link-demo]
+ [**Have some ramen and check out the demo** 🍜 ][link-demo]
 
 ## Custom Pattern
 You can pass in your own sequence like so:
@@ -29,7 +29,7 @@ You can pass in your own sequence like so:
 new Konami({ pattern: ['r','a','m','e','n'] });
 ```
 ## Timeout
-You can define the max. time between two key strokes, to make it event harder to succed. The default time is set to `600ms` which is fairly enough time. Going below `200ms` makes it almost impossible.
+You can define the max. time between two key strokes, to make it event harder to succeed. The default time is set to `600ms`. Going below `200ms` makes it almost impossible to hit the pattern in the right order and time.
 ```js
 new Konami({ timeout: 450 }); // time in ms
 ```
