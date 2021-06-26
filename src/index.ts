@@ -1,15 +1,21 @@
+type constructorOptions = {
+  timeout: number,
+  pattern: Array<String>
+}
+
 export default class KonamiRamen {
   pattern: Array<String> = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   validator: Iterator<boolean, any, any>
-  timeout: number = 300;
+  timeout: number = 800;
   enableSound: boolean = true;
   listeners: any = {};
   /**
    *
    */
-  constructor(pattern?: Array<String>, timeout?: number) {
-    if (pattern) this.pattern = pattern;
+  constructor(options: constructorOptions) {
+    const {timeout, pattern} = options;
     if (timeout) this.timeout = timeout;
+    if (pattern) this.pattern = pattern;
   }
 
   /**
@@ -24,7 +30,7 @@ export default class KonamiRamen {
     while (pattern.length > position) {
       const { key, callback } = yield { match, position: position - 1 };
       clearTimeout(timer)
-      timer = setTimeout(() => { position = 0; callback() }, this.timeout);
+      timer = setTimeout(() => { position = 0; if (callback) callback() }, this.timeout);
       match = pattern[position] === key;
       if (match) { position++ } else { position = 0 };
     }
@@ -49,10 +55,6 @@ export default class KonamiRamen {
     this.emitEvent('stop')
   }
 
-  private emitEvent(type: string, event?: any): void {
-    if (this.listeners[type]) this.listeners[type](event)
-  }
-
   /**
    *
    * @param event
@@ -74,12 +76,8 @@ export default class KonamiRamen {
       this.emitEvent("success", {
         lastKey: event.key, lastPosition: position
       })
-      this.handleOnSuccess()
+      this.startValidator();
     }
-  }
-
-  private handleOnSuccess(): void {
-    this.startValidator();
   }
 
   /**
@@ -98,6 +96,15 @@ export default class KonamiRamen {
     if (typeof window !== 'undefined' && window.document) {
       document.removeEventListener('keydown', this.handleOnKeyDown)
     }
+  }
+
+  /**
+   *
+   * @param type
+   * @param event
+   */
+  private emitEvent(type: string, event?: any): void {
+    if (this.listeners[type]) this.listeners[type](event)
   }
 
   /**
@@ -138,5 +145,13 @@ export default class KonamiRamen {
    */
   setTimeout(time: number): void {
     if (time) this.timeout = time;
+  }
+
+  /**
+   *
+   * @param pattern
+   */
+  setPattern(pattern: Array<String>){
+    if(pattern) this.pattern = pattern;
   }
 }
