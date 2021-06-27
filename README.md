@@ -1,7 +1,6 @@
 # konami-ramen 🍜
 
-A highly sophisticated **easter egg** library with zero dependancies written in Typescript. By default it will listen for the famouse [*Konami Code*](https://en.
-wikipedia.org/wiki/Konami_Code).
+A highly sophisticated **easter egg** library with zero dependancies written in Typescript. By default it will listen for the famouse [*Konami Code*](https://en.wikipedia.org/wiki/Konami_Code).
 
 ## Demo
  [**See it in action here** 🍜 ][link-demo]
