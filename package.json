@@ -1,7 +1,7 @@
 {
   "name": "konami-ramen",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.9.0",
+  "description": "A highly sophisticated easter egg library with zero dependancies written in Typescript.",
   "main": "dist/index.js",
   "module": "esm/index.js",
   "types": "dist/index.d.ts",
