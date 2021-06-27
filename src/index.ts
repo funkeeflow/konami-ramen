@@ -12,8 +12,8 @@ export const konamiCode = [
 ];
 
 /**
- * Sequence should ne composed of KeyboardEvent.key values
- * See full list here:
+ * Sequence should be composed of KeyboardEvent.key values
+ * See the full list here:
  * https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
  */
 export type Sequence = Array<string>;

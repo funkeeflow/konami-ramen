@@ -1,15 +1,16 @@
 # konami-ramen 🍜
 
-A highly sophisticated **easter egg** library with zero dependancies and lots of customizations.By default it will listen for the famouse [*Konami Code*](https://en.wikipedia.org/wiki/Konami_Code).
+A highly sophisticated **easter egg** library with zero dependancies written in Typescript. By default it will listen for the famouse [*Konami Code*](https://en.
+wikipedia.org/wiki/Konami_Code).
+
+## Demo
+ [**See it in action here** 🍜 ][link-demo]
 
 ## Installation
 
 ```sh
 npm install konami-ramen
 ```
-
-## Demo
- [**See it in action here** 🍜 ][link-demo]
 
 ## Usage
 
@@ -24,20 +25,24 @@ konami.on('success',()=>{
 })
 
 ```
-## Custom Pattern
+## Custom Sequence
 
-The default pattern is the (`↑` `↑` `↓` `↓` `←` `→` `←` `→` `a` `b`).
+The default sequence is the Konami Code (`↑` `↑` `↓` `↓` `←` `→` `←` `→` `a` `b`).
 
 You can pass in your own sequence like so:
 ```js
-new Konami({ pattern: ['r','a','m','e','n'] });
+new Konami({ sequence: ['r','a','m','e','n'] });
 ```
+The Sequence needs to be composed of KeyboardEvent.key values.
+See the full list here:
+https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+
 ## Timeout
-You can define the max. time between two key strokes, to make it event harder to succeed. The default time is set to `600ms`. Going below `200ms` makes it almost impossible to hit the pattern in the right order and time.
+You can define the max. time between two key strokes, to make it event harder to input the sequence. The default time is set to `600ms`. Going below `200ms` makes it almost impossible to hit the sequence in the right order and time.
 ```js
 new Konami({ timeout: 450 }); // time in ms
 ```
-*Note:* If the between to keystrokes the max time is exceeded, the pattern will start from the begining.
+*Note:* If the max time between two key strokes is exceeded, the pattern will start from the begining.
 
 ## Events
 There are a couple of events, you can listen to, like so:
@@ -86,3 +91,6 @@ The `lastMatch` property holds the matching state of the most recent input, **af
 The `keyboardEvent` is the native keyboard event for the `keydown` event.
 
 [link-demo]: https://
+
+## Lincense
+MIT
