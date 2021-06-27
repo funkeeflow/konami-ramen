@@ -1,68 +1,129 @@
-type constructorOptions = {
-  timeout: number,
-  pattern: Array<String>
-}
+export const konamiCode = [
+  'ArrowUp',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowLeft',
+  'ArrowRight',
+  'b',
+  'a'
+];
 
-export default class KonamiRamen {
-  pattern: Array<String> = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-  validator: Iterator<boolean, any, any>
-  timeout: number = 800;
+/**
+ * Sequence should ne composed of KeyboardEvent.key values
+ * See full list here:
+ * https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+ */
+export type Sequence = Array<string>;
+
+/**
+ * Options to be passed to the constructor
+ */
+export interface KonamiRamenOptions {
+  /**
+   * Optional timeout value in ms, default is 800ms
+   */
+  timeout?: number,
+  /**
+   * Optional sequence, default is the konami code sequence
+   */
+  sequence?: Sequence;
+};
+
+/**
+ * Name: konami-ramen
+ * Author: Florian Berg (@funkeeflow)
+ * Licence: MIT
+ *
+ * A class to listene to keyboard input events and match them against a set KeyboardEvent key values.
+ *
+ */
+class KonamiRamen {
+  sequence: Sequence;
+  validator: Iterator<any, any, any>
+  timeout: number;
   enableSound: boolean = true;
   listeners: any = {};
   /**
-   *
+   * You can pass in a custom timeout value or a custom pattern
+   * @param {KonamiRamenOptions}
    */
-  constructor(options: constructorOptions) {
-    const {timeout, pattern} = options;
+  constructor(options: KonamiRamenOptions = {}) {
+    const { timeout = 800, sequence = konamiCode } = options;
     if (timeout) this.timeout = timeout;
-    if (pattern) this.pattern = pattern;
+    if (sequence) this.sequence = sequence;
   }
 
   /**
+   * This generator function will match the input key step by step against the sequence.
+   * A timeout is set for each validation step. If the timeout exceeds, the validation will be reset
+   * to the first position in the sequence.
    *
-   * @param pattern
-   * @returns
+   * @param {sequence}
+   * @returns {Iterator<any, any, any>}
    */
-  private *patternValidator(pattern: Array<String>): Generator<any, any, any> {
+  private *sequenceValidator(sequence: Sequence): Iterator<any, any, any> {
+    /* setTimeout reference */
     let timer: number;
+    /* current position in the sequence */
     let position = 0;
+    /* hold the last match state */
     let match = false;
-    while (pattern.length > position) {
-      const { key, callback } = yield { match, position: position - 1 };
+    /* We will step through the sequence here */
+    while (sequence.length > position) {
+      /* we pass in the keyboard event and a callback function to be called by our timeout. */
+      /* Note: position output is -1 if did not have a match */
+      const { event, callback } = yield { match, position: position - 1 };
+      /* first we clear any existing timeout */
       clearTimeout(timer)
+      /* and set a new one right after. If this exceeds, we will call our passed in callback */
       timer = setTimeout(() => { position = 0; if (callback) callback() }, this.timeout);
-      match = pattern[position] === key;
+      /* lets validate the current event against the postion in the sequence here */
+      match = this.validate(sequence[position], event);
+      /* if we have a match, we advance the position pointer, if not, we start from the begining */
       if (match) { position++ } else { position = 0 };
     }
+    /* if the we stepped through, or the function returns, we clear any existing timeout */
     clearTimeout(timer);
+    /* and return our latest match state and the position.  */
+    /* Note: position output is -1 if did not have a match */
     return { match, position: position - 1 };
   }
 
   /**
-   *
+   * Validation function. This will key if the current key is matched with the input
+   * @param key
+   * @param event
+   * @returns
    */
+  private validate(key: string, event: KeyboardEvent): boolean{
+    return key === event.key;
+  }
+
+  /** Starts the validation and emits associated event */
   private startValidator(): void {
-    this.validator = this.patternValidator(this.pattern);
+    this.validator = this.sequenceValidator(this.sequence);
     this.validator.next();
     this.emitEvent('start', { position: 0 })
   }
 
-  /**
-   *
-   */
+  /** Stop the validation and emits associated event */
   private stopValidator(): void {
     this.validator.return();
     this.emitEvent('stop')
   }
 
   /**
-   *
    * @param event
    */
   private handleOnKeyDown = (event: KeyboardEvent): void => {
+    if(event.key === 'Shift' || event.key === 'Alt') return;
+
     const { value: { match, position }, done } =
       this.validator.next({
-        key: event.key,
+        event,
         callback: () => {
           this.emitEvent('timeout', {
             lastKey: event.key, lastPosition: position, lastMatch: match
@@ -80,9 +141,7 @@ export default class KonamiRamen {
     }
   }
 
-  /**
-   *
-   */
+  /** */
   private addListeners(): void {
     if (typeof window !== 'undefined' && window.document) {
       document.addEventListener('keydown', this.handleOnKeyDown)
@@ -149,9 +208,11 @@ export default class KonamiRamen {
 
   /**
    *
-   * @param pattern
+   * @param sequence
    */
-  setPattern(pattern: Array<String>){
-    if(pattern) this.pattern = pattern;
+  setsequence(sequence: Array<string>) {
+    if (sequence) this.sequence = sequence;
   }
 }
+
+export default KonamiRamen;
