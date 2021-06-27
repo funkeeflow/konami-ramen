@@ -1,12 +1,16 @@
 # konami-ramen 🍜
 
-A highly sophisticated **easter egg** library with zero dependancies and lots of customizations. Its written in Typescript with all ES6+ goodness there is. By default it will listen for the famouse [*Konami Code*](https://en.wikipedia.org/wiki/Konami_Code) (`↑` `↑` `↓` `↓` `←` `→` `←` `→` `a` `b`).
+A highly sophisticated **easter egg** library with zero dependancies and lots of customizations.By default it will listen for the famouse [*Konami Code*](https://en.wikipedia.org/wiki/Konami_Code).
 
 ## Installation
 
 ```sh
 npm install konami-ramen
 ```
+
+## Demo
+ [**See it in action here** 🍜 ][link-demo]
+
 ## Usage
 
 ```js
@@ -20,10 +24,10 @@ konami.on('success',()=>{
 })
 
 ```
-
- [**Have some ramen and check out the demo** 🍜 ][link-demo]
-
 ## Custom Pattern
+
+The default pattern is the (`↑` `↑` `↓` `↓` `←` `→` `←` `→` `a` `b`).
+
 You can pass in your own sequence like so:
 ```js
 new Konami({ pattern: ['r','a','m','e','n'] });
