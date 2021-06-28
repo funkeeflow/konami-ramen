@@ -15,7 +15,8 @@
     "prebuild": "npm run clean",
     "build": "npm run clean && npm run build:cjs && npm run build:es",
     "build:cjs": "tsc",
-    "build:es": "tsc -m esNext --outDir esm"
+    "build:es": "tsc -m esNext --outDir esm",
+    "test": "echo \"No test specified\""
   },
   "license": "MIT",
   "devDependencies": {
