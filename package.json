@@ -2,6 +2,7 @@
   "name": "konami-ramen",
   "version": "0.4.1",
   "description": "A highly sophisticated easter egg library with zero dependancies written in Typescript.",
+  "homepage": "https://github.com/funkeeflow/konami-ramen",
   "main": "dist/index.js",
   "module": "esm/index.js",
   "types": "dist/index.d.ts",
