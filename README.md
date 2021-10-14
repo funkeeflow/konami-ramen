@@ -1,6 +1,7 @@
 # konami-ramen 🍜
 
-A highly sophisticated **easter egg** library with zero dependancies written in Typescript. By default it will listen for the famouse [*Konami Code*](https://en.wikipedia.org/wiki/Konami_Code).
+A highly sophisticated **easter egg** library with zero dependancies written in Typescript. By default it will listen for the famouse [*Konami Code*](https://en.wikipedia.org/wiki/Konami_Code). `Brotli size = ~0.56kb`
+
 
 ## Demo
  [**See it in action here** 🍜 ][link-demo]
@@ -17,10 +18,10 @@ npm install konami-ramen
 import Konami from 'konami-ramen';
 
 const konami = new Konami();
-konami.start();
+konami.listen();
 
 konami.on('success',()=>{
-  console.log("Mmmmh ... tasty ramen, i like!")
+  console.log("Mmmmh ... that's tasty ramen!")
 })
 
 ```
@@ -37,11 +38,11 @@ See the full list here:
 https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 
 ## Timeout
-You can define the max. time between two key strokes, to make it event harder to input the sequence. The default time is set to `600ms`. Going below `200ms` makes it almost impossible to hit the sequence in the right order and time.
+You can define the max. time between two key strokes, to make it event harder to enter the sequence. The default time is set to `600ms`. Going below `200ms` makes it almost impossible to hit the sequence in the right order and time.
 ```js
 new Konami({ timeout: 450 }); // time in ms
 ```
-*Note:* If the max time between two key strokes is exceeded, the pattern will start from the begining.
+*Note:* If the max. time between two key strokes is exceeded, the validation will start from the begining.
 
 ## Events
 There are a couple of events, you can listen to, like so:
