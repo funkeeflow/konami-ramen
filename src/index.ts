@@ -176,10 +176,10 @@ class KonamiRamen {
   /**
    *
    */
-     listen(): void {
-      this.addListeners();
-      this.startValidator();
-    }
+  listen(): void {
+    this.addListeners();
+    this.startValidator();
+  }
 
   /**
    *
