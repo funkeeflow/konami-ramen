@@ -29,7 +29,7 @@ export interface KonamiRamenOptions {
   /**
    * Optional sequence, default is the konami code sequence
    */
-  sequence?: Sequence;
+  sequence?: Sequence,
 };
 
 /**
@@ -37,15 +37,15 @@ export interface KonamiRamenOptions {
  * Author: Florian Berg (@funkeeflow)
  * Licence: MIT
  *
- * A class to listene to keyboard input events and match them against a set KeyboardEvent key values.
+ * A class to listen to keyboard input events and match them against a set KeyboardEvent key values.
  *
  */
 class KonamiRamen {
-  sequence: Sequence;
-  validator: Iterator<any, any, any>
-  timeout: number;
-  enableSound: boolean = true;
-  listeners: any = {};
+
+  private sequence: Sequence;
+  private validator: Iterator<any, any, any>
+  private timeout: number;
+  private listeners: any = {};
   /**
    * You can pass in a custom timeout value or a custom pattern
    * @param {KonamiRamenOptions}
@@ -74,7 +74,7 @@ class KonamiRamen {
     /* We will step through the sequence here */
     while (sequence.length > position) {
       /* we pass in the keyboard event and a callback function to be called by our timeout. */
-      /* Note: position output is -1 if did not have a match */
+      /* Note: position output is -1 if we did not have a match */
       const { event, callback } = yield { match, position: position - 1 };
       /* first we clear any existing timeout */
       clearTimeout(timer)
@@ -88,28 +88,28 @@ class KonamiRamen {
     /* if the we stepped through, or the function returns, we clear any existing timeout */
     clearTimeout(timer);
     /* and return our latest match state and the position.  */
-    /* Note: position output is -1 if did not have a match */
+    /* Note: position output is -1 if we did not have a match */
     return { match, position: position - 1 };
   }
 
   /**
-   * Validation function. This will key if the current key is matched with the input
+   * Validation function. This will validate if the current key is matched with the input
    * @param key
    * @param event
    * @returns
    */
-  private validate(key: string, event: KeyboardEvent): boolean{
+  private validate(key: string, event: KeyboardEvent): boolean {
     return key === event.key;
   }
 
-  /** Starts the validation and emits associated event */
+  /** Starts the validation and emits the associated event */
   private startValidator(): void {
     this.validator = this.sequenceValidator(this.sequence);
     this.validator.next();
     this.emitEvent('start', { position: 0 })
   }
 
-  /** Stop the validation and emits associated event */
+  /** Stop the validation and emits the associated event */
   private stopValidator(): void {
     this.validator.return();
     this.emitEvent('stop')
@@ -119,7 +119,7 @@ class KonamiRamen {
    * @param event
    */
   private handleOnKeyDown = (event: KeyboardEvent): void => {
-    if(event.key === 'Shift' || event.key === 'Alt') return;
+    if (event.key === 'Shift' || event.key === 'Alt') return;
 
     const { value: { match, position }, done } =
       this.validator.next({
@@ -167,12 +167,19 @@ class KonamiRamen {
   }
 
   /**
-   *
+   * Depracated: will be removed soon.
    */
   start(): void {
-    this.addListeners();
-    this.startValidator();
+    this.listen();
   }
+
+  /**
+   *
+   */
+     listen(): void {
+      this.addListeners();
+      this.startValidator();
+    }
 
   /**
    *
@@ -194,7 +201,7 @@ class KonamiRamen {
    *
    * @param type
    */
-  of(type: string) {
+  off(type: string) {
     delete this.listeners[type];
   }
 
